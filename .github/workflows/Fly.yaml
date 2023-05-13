@@ -1,0 +1,47 @@
+name: Deploy to Fly
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 1 * * 0'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5 #roughly ~2 min per deployment.
+    steps:
+      - name: Deploy git.evanferrao.win
+        uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        continue-on-error: true
+      - run: |
+              #Deploy git.evanferrao.win
+              rm -rf *
+              curl -ksSLo fly.toml ${{ secrets.GIT_EVANFERRAO_WIN_FLY_TOML }}
+              flyctl deploy --remote-only
+              flyctl ssh console --command 'fallocate -l 512M /swapfile'
+              flyctl ssh console --command 'chmod 0600 /swapfile'
+              flyctl ssh console --command 'mkswap /swapfile'
+              flyctl ssh console --command 'sysctl -w vm.swappiness=10'
+              flyctl ssh console --command 'swapon /swapfile'
+              flyctl auth logout
+        env: 
+          FLY_API_TOKEN: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_API_TOKEN }}
+
+      - name: Deploy git.boxinaclosedbox.win
+        uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        continue-on-error: true
+      - run: |
+              #Deploy git.boxinaclosedbox.win
+              rm -rf *
+              curl -ksSLo fly.toml ${{ secrets.GIT_BOXINACLOSEDBOX_WIN_FLY_TOML }}
+              flyctl deploy --remote-only
+              flyctl ssh console --command 'fallocate -l 512M /swapfile'
+              flyctl ssh console --command 'chmod 0600 /swapfile'
+              flyctl ssh console --command 'mkswap /swapfile'
+              flyctl ssh console --command 'sysctl -w vm.swappiness=10'
+              flyctl ssh console --command 'swapon /swapfile'
+              flyctl auth logout
+        env: 
+          FLY_API_TOKEN: ${{ secrets.GIT_BOXINACLOSEDBOX_WIN_FLY_API_TOKEN }}
