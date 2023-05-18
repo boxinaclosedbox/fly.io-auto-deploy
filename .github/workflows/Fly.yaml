@@ -17,16 +17,22 @@ jobs:
       - run: |
               #Deploy git.evanferrao.win
               rm -rf *
-              curl -ksSLo fly.toml ${{ secrets.GIT_EVANFERRAO_WIN_FLY_TOML }}
+              curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
+              IPv6_ADDRESS="$(flyctl ips list --app "${FLY_APP_NAME}" | grep v6 | sed s/public.*// | sed s/v6//)"
+              IPv6_ADDRESS="$(echo "${IPv6_ADDRESS}" | tr -d '\t' | tr -d ' ')"
+              flyctl ips release "${IPv6_ADDRESS}" --app "${FLY_APP_NAME}" || true
               flyctl ssh console --command 'fallocate -l 512M /swapfile'
               flyctl ssh console --command 'chmod 0600 /swapfile'
               flyctl ssh console --command 'mkswap /swapfile'
               flyctl ssh console --command 'sysctl -w vm.swappiness=10'
               flyctl ssh console --command 'swapon /swapfile'
+              flyctl ips allocate-v6 --app "${FLY_APP_NAME}"
               flyctl auth logout
         env: 
           FLY_API_TOKEN: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_API_TOKEN }}
+          FLY_APP_NAME: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_APP_NAME }}
+          FLY_TOML_URL: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_TOML }}
 
       - name: Deploy git.boxinaclosedbox.win
         uses: actions/checkout@v3
@@ -35,13 +41,43 @@ jobs:
       - run: |
               #Deploy git.boxinaclosedbox.win
               rm -rf *
-              curl -ksSLo fly.toml ${{ secrets.GIT_BOXINACLOSEDBOX_WIN_FLY_TOML }}
+              curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
+              IPv6_ADDRESS="$(flyctl ips list --app "${FLY_APP_NAME}" | grep v6 | sed s/public.*// | sed s/v6//)"
+              IPv6_ADDRESS="$(echo "${IPv6_ADDRESS}" | tr -d '\t' | tr -d ' ')"
+              flyctl ips release "${IPv6_ADDRESS}" --app "${FLY_APP_NAME}" || true
               flyctl ssh console --command 'fallocate -l 512M /swapfile'
               flyctl ssh console --command 'chmod 0600 /swapfile'
               flyctl ssh console --command 'mkswap /swapfile'
               flyctl ssh console --command 'sysctl -w vm.swappiness=10'
               flyctl ssh console --command 'swapon /swapfile'
+              flyctl ips allocate-v6 --app "${FLY_APP_NAME}"
               flyctl auth logout
         env: 
           FLY_API_TOKEN: ${{ secrets.GIT_BOXINACLOSEDBOX_WIN_FLY_API_TOKEN }}
+          FLY_APP_NAME: ${{ secrets.GIT_BOXINACLOSEDBOX_WIN_FLY_APP_NAME }}
+          FLY_TOML_URL: ${{ secrets.GIT_BOXINACLOSEDBOX_WIN_FLY_TOML }}
+          
+      - name: Deploy additional git
+        uses: actions/checkout@v3
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+        continue-on-error: true
+      - run: |
+              #Deploy additional git
+              rm -rf *
+              curl -ksSLo fly.toml "${FLY_TOML_URL}"
+              flyctl deploy --remote-only
+              IPv6_ADDRESS="$(flyctl ips list --app "${FLY_APP_NAME}" | grep v6 | sed s/public.*// | sed s/v6//)"
+              IPv6_ADDRESS="$(echo "${IPv6_ADDRESS}" | tr -d '\t' | tr -d ' ')"
+              flyctl ips release "${IPv6_ADDRESS}" --app "${FLY_APP_NAME}" || true
+              flyctl ssh console --command 'fallocate -l 512M /swapfile'
+              flyctl ssh console --command 'chmod 0600 /swapfile'
+              flyctl ssh console --command 'mkswap /swapfile'
+              flyctl ssh console --command 'sysctl -w vm.swappiness=10'
+              flyctl ssh console --command 'swapon /swapfile'
+              flyctl ips allocate-v6 --app "${FLY_APP_NAME}"
+              flyctl auth logout
+        env: 
+          FLY_API_TOKEN: ${{ secrets.GIT_ADDITIONAL_FLY_API_TOKEN }}
+          FLY_APP_NAME: ${{ secrets.GIT_ADDITIONAL_FLY_APP_NAME }}
+          FLY_TOML_URL: ${{ secrets.GIT_ADDITIONAL_FLY_TOML }}
