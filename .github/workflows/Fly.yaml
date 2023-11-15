@@ -16,6 +16,7 @@ jobs:
         continue-on-error: true
       - run: |
               #Deploy git.evanferrao.win
+              fly auth whoami
               rm -rf *
               curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
@@ -40,6 +41,7 @@ jobs:
         continue-on-error: true
       - run: |
               #Deploy git.boxinaclosedbox.win
+              fly auth whoami
               rm -rf *
               curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
@@ -64,6 +66,7 @@ jobs:
         continue-on-error: true
       - run: |
               #Deploy additional git
+              fly auth whoami
               rm -rf *
               curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
