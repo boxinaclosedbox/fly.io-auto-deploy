@@ -16,7 +16,6 @@ jobs:
         continue-on-error: true
       - run: |
               #Deploy git.evanferrao.win
-              flyctl auth whoami
               rm -rf *
               curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
@@ -34,14 +33,12 @@ jobs:
           FLY_API_TOKEN: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_API_TOKEN }}
           FLY_APP_NAME: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_APP_NAME }}
           FLY_TOML_URL: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_TOML }}
-
       - name: Deploy git.boxinaclosedbox.win
         uses: actions/checkout@v3
       - uses: superfly/flyctl-actions/setup-flyctl@master
         continue-on-error: true
       - run: |
               #Deploy git.boxinaclosedbox.win
-              flyctl auth whoami
               rm -rf *
               curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
@@ -66,7 +63,6 @@ jobs:
         continue-on-error: true
       - run: |
               #Deploy additional git
-              flyctl auth whoami
               rm -rf *
               curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
