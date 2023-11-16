@@ -16,6 +16,9 @@ jobs:
         continue-on-error: true
       - run: |
               #Deploy git.evanferrao.win
+              flyctl wireguard websockets enable
+              flyctl agent restart
+              flyctl doctor
               rm -rf *
               curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
