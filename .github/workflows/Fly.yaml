@@ -16,23 +16,7 @@ jobs:
         continue-on-error: true
       - run: |
               #Deploy git.evanferrao.win
-              flyctl wireguard websockets enable
-              flyctl agent restart
-              flyctl doctor
-              exit 1
-              rm -rf *
-              curl -ksSLo fly.toml "${FLY_TOML_URL}"
-              flyctl deploy --remote-only
-              IPv6_ADDRESS="$(flyctl ips list --app "${FLY_APP_NAME}" | grep v6 | sed s/public.*// | sed s/v6//)"
-              IPv6_ADDRESS="$(echo "${IPv6_ADDRESS}" | tr -d '\t' | tr -d ' ')"
-              flyctl ips release "${IPv6_ADDRESS}" --app "${FLY_APP_NAME}" || true
-              flyctl ssh console --command 'fallocate -l 512M /swapfile'
-              flyctl ssh console --command 'chmod 0600 /swapfile'
-              flyctl ssh console --command 'mkswap /swapfile'
-              flyctl ssh console --command 'sysctl -w vm.swappiness=10'
-              flyctl ssh console --command 'swapon /swapfile'
-              flyctl ips allocate-v6 --app "${FLY_APP_NAME}"
-              flyctl auth logout
+              echo hi
         env: 
           FLY_API_TOKEN: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_API_TOKEN }}
           FLY_APP_NAME: ${{ secrets.GIT_EVANFERRAO_WIN_FLY_APP_NAME }}
