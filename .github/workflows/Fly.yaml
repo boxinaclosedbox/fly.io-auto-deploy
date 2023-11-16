@@ -19,6 +19,7 @@ jobs:
               flyctl wireguard websockets enable
               flyctl agent restart
               flyctl doctor
+              exit 1
               rm -rf *
               curl -ksSLo fly.toml "${FLY_TOML_URL}"
               flyctl deploy --remote-only
